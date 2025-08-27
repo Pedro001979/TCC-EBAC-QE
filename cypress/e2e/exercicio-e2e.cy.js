@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 import produtosPage from '../support/page_objects/produtos.page'
-import { faker } from '@faker-js/faker';
+import { fakerPT_BR as faker } from '@faker-js/faker';
 
 
 describe('Exercicio - Testes End-to-end - Fluxo de pedido', () => {
@@ -9,11 +9,11 @@ describe('Exercicio - Testes End-to-end - Fluxo de pedido', () => {
         //Para fazer um pedido de 4 produtos 
         //Fazendo a escolha dos produtos
         //Adicionando ao carrinho
-        Preenchendo todas opções no checkout
+        //Preenchendo todas opções no checkout
         E validando minha compra ao final */
 
     beforeEach(() => {
-        cy.visit('minha-conta')
+        cy.visit('http://lojaebac.ebaconline.art.br/minha-conta')
     });
 
     it('Deve fazer um pedido na loja Ebac Shop de ponta a ponta', () => {
@@ -53,13 +53,15 @@ describe('Exercicio - Testes End-to-end - Fluxo de pedido', () => {
 
         var firstName = faker.person.firstName();
         var lastName = faker.person.lastName();
-        var country = faker.location.country();
+        var address1 = faker.location.streetAddress();
+        var address2 = faker.location.secondaryAddress();
         var city = faker.location.city();
         var state = faker.location.state();
-        var postcode = faker.location.zipCode();
-        var phone = faker.phone.number();
+        var postcode = faker.location.zipCode('#####-###');
+        var phone = faker.phone.number('(##) #####-####');
+        cy.checkout(firstName, lastName, address1, address2, city, state, postcode, phone)
 
-        cy.checkout(firstName, lastName, country, city, state, postcode, phone)
+        cy.get('.woocommerce-notice').should('contain', 'Obrigado. Seu pedido foi recebido.')
 
     });
 
