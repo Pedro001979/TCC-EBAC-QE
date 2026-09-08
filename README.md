@@ -1,54 +1,59 @@
-# Testes End to End - Ebac Shop
-### Exercício para os alunos de Qualidade de software da EBAC 
+# Automação E2E — E-commerce
 
-Ebac shop: http://lojaebac.ebaconline.art.br/
+![Cypress](https://img.shields.io/badge/Cypress-E2E-17202C?logo=cypress&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=black)
+![QA](https://img.shields.io/badge/QA-Automação%20de%20Testes-2E7D32)
 
-## Clonando e executando em sua máquina
+## Sobre o projeto
 
-### Pré-requisito:
+Suíte de **testes End-to-End para uma aplicação de e-commerce**, desenvolvida com Cypress para validar jornadas críticas de usuário e regras funcionais da aplicação.
 
--Node.js - Você encontra em: https://nodejs.org/en/
+O projeto demonstra a aplicação prática de automação Web, criação de cenários reutilizáveis e utilização de dados de teste para ampliar a cobertura da suíte.
 
--Visual Studio Code ou qualquer editor de texto - você encontra em: https://code.visualstudio.com/download
+## Cenários
 
--Git: você encontra em: https://git-scm.com/downloads
+- Fluxos de compra e navegação
+- Autenticação
+- Cadastro de usuários
+- Validações de formulário
+- Cenários positivos e negativos
+- Massa de dados para testes
 
+## Tecnologias
 
-Via terminal, rode os seguintes comandos:
-```  
-git clone https://github.com/EBAC-QE/testes-e2e-ebac-shop.git
+- Cypress
+- JavaScript
+- Node.js
+- Faker
+
+## Execução
+
+```bash
+npm install
+npx cypress open
 ```
-```
-cd testes-e2e-ebac-shop
-```
 
-#### Para instalar as dependencias:
-```
-npm install 
-```
+Para execução headless:
 
-#### Para executar em moodo Headlesss via console:
-```
+```bash
 npx cypress run
 ```
 
-#### Para executar via Dashboard:
-```
-npx cypress open 
-```
-Após abrir o dasboard, clique na opção "Running integration tests" para rodar todos os testes.
+## Competências demonstradas
 
+- Planejamento e execução de cenários E2E
+- Automação de fluxos críticos
+- Validação funcional de aplicações Web
+- Uso de massa de dados
+- Organização de suítes de testes
 
-### Bibliotecas de apoio:
--Cypress: Framework de automação: https://cypress.io/
+## Contexto profissional
 
--Faker: Biblioteca para geração de massa de dados: https://www.npmjs.com/package/faker
+Este repositório integra meu portfólio de **QA Automation** como exemplo de automação de uma aplicação de e-commerce e serve como base para demonstrar evolução em técnicas de testes End-to-End.
 
+## Autor
 
-### Bom exercício ;) 
-Fábio & José Ernesto
-Qualidade de software
+**Pedro Ricardo**  
+QA Automation | Cypress | JavaScript | Web | API | Mobile
 
-
-
-
+[GitHub](https://github.com/Pedro001979) · [LinkedIn](https://www.linkedin.com/in/pedro-ricardo-6a3b76236/)
