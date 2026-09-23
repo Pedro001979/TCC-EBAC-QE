@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "test:ui": "cypress run --config-file UI/cypress.config.js",
+    "test:ui:open": "cypress open --config-file UI/cypress.config.js"
+  },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
     "cypress": "^15.0.0"

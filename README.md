@@ -1,59 +1,65 @@
-# Automação E2E — E-commerce
+# TCC — Engenharia de Qualidade de Software | EBAC Shop
 
-![Cypress](https://img.shields.io/badge/Cypress-E2E-17202C?logo=cypress&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=black)
-![QA](https://img.shields.io/badge/QA-Automação%20de%20Testes-2E7D32)
+Projeto de conclusão do curso de **Engenharia de Qualidade de Software**, com foco na análise, planejamento, execução e automação de testes do e-commerce EBAC Shop.
 
-## Sobre o projeto
+## Objetivo
 
-Suíte de **testes End-to-End para uma aplicação de e-commerce**, desenvolvida com Cypress para validar jornadas críticas de usuário e regras funcionais da aplicação.
+Aplicar práticas de Quality Engineering em diferentes níveis da aplicação, contemplando testes manuais e automatizados, integração contínua e testes de performance.
 
-O projeto demonstra a aplicação prática de automação Web, criação de cenários reutilizáveis e utilização de dados de teste para ampliar a cobertura da suíte.
+## Estrutura do projeto
 
-## Cenários
+```
+.
+├── UI/
+│   └── cypress/
+│       ├── e2e/
+│       ├── fixtures/
+│       └── support/
+│           └── page_objects/
+│
+├── API/
+├── Mobile/
+├── docs/
+├── .gitignore
+├── package.json
+└── README.md
+```
 
-- Fluxos de compra e navegação
-- Autenticação
-- Cadastro de usuários
-- Validações de formulário
-- Cenários positivos e negativos
-- Massa de dados para testes
+## Automação Web
 
-## Tecnologias
+A automação Web utiliza **Cypress + JavaScript** e mantém os recursos já desenvolvidos no projeto, reorganizados dentro da pasta `UI`.
 
-- Cypress
-- JavaScript
-- Node.js
-- Faker
+Atualmente estão estruturados:
+
+- **US-0002 — Login na plataforma**
+- Fluxo E2E de compra
+- Massa de dados com fixture
+- Comandos customizados
+- Page Object para produtos
+
+## Próximas etapas
+
+1. Completar a automação Web conforme os casos de teste do TCC.
+2. Criar a automação da API utilizando Supertest.
+3. Criar a automação Mobile utilizando Appium + WebdriverIO.
+4. Integrar as automações ao GitHub Actions.
+5. Implementar os testes de performance com K6.
+6. Organizar evidências e relatórios na pasta `docs`.
 
 ## Execução
 
 ```bash
 npm install
-npx cypress open
+npm run test:ui
 ```
 
-Para execução headless:
+Para abrir o Cypress:
 
 ```bash
-npx cypress run
+npm run test:ui:open
 ```
-
-## Competências demonstradas
-
-- Planejamento e execução de cenários E2E
-- Automação de fluxos críticos
-- Validação funcional de aplicações Web
-- Uso de massa de dados
-- Organização de suítes de testes
-
-## Contexto profissional
-
-Este repositório integra meu portfólio de **QA Automation** como exemplo de automação de uma aplicação de e-commerce e serve como base para demonstrar evolução em técnicas de testes End-to-End.
 
 ## Autor
 
 **Pedro Ricardo**  
 QA Automation | Cypress | JavaScript | Web | API | Mobile
-
-[GitHub](https://github.com/Pedro001979) · [LinkedIn](https://www.linkedin.com/in/pedro-ricardo-6a3b76236/)
