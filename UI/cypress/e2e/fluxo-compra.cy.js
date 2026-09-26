@@ -36,17 +36,13 @@ describe("Fluxo de pedido - EBAC Shop", () => {
     produtosPage.validarPedidoRecebido();
   });
 
-  it("CT-009 - Deve adicionar até 10 unidades do mesmo produto", () => {
-    const quantidade = 10;
-    expect(quantidade, "quantidade solicitada no teste").to.be.within(1, 10);
-
+  it("CT-009 - Não permite adicionar mais de 10 unidades do mesmo produto", () => {
     produtosPage.navegarParaProdutos();
     produtosPage.buscarProduto("Aether Gym Pant");
-    produtosPage.addProdutoCarrinho(33, "Blue", quantidade);
+    produtosPage.addProdutoCarrinho(33, "Blue", 11);
     produtosPage.abrirCarrinho();
 
     produtosPage.validarLimiteDeItens(10);
-    produtosPage.validarQuantidadeNoCarrinho(quantidade);
   });
 
   it("CT-010 - Não permite que o subtotal ultrapasse R$ 990,00", () => {
