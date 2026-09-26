@@ -1,8 +1,10 @@
 /// <reference types="cypress" />
 
-let dadosLogin;
+import loginPage from "../support/page_objects/login.page";
 
 describe("US-0002 - Login na plataforma", () => {
+  let dadosLogin;
+
   before(() => {
     cy.fixture("perfil").then((perfil) => {
       dadosLogin = perfil;
@@ -10,57 +12,35 @@ describe("US-0002 - Login na plataforma", () => {
   });
 
   beforeEach(() => {
-    cy.visit("minha-conta");
+    loginPage.visitar();
   });
 
   it("CT-005 - Deve realizar login com credenciais válidas", () => {
-    cy.login(dadosLogin.usuario, dadosLogin.senha);
-
-    cy.get(".page-title").should("exist");
+    loginPage.fazerLogin(dadosLogin.usuario, dadosLogin.senha);
+    loginPage.validarLoginRealizado();
   });
 
   it("CT-006 - Deve impedir login com senha inválida", () => {
-    cy.login(dadosLogin.usuario, "SenhaInvalida123");
-
-    cy.get("body").then(($body) => {
-      cy.log("===== TEXTO DA PÁGINA =====");
-      cy.log($body.text());
-
-      cy.log("===== ELEMENTOS DE ERRO =====");
-
-      $body.find(
-        ".woocommerce-error, .woocommerce-message, .woocommerce-NoticeGroup, [role='alert']"
-      ).each((index, element) => {
-        cy.log(
-          `ERRO ${index + 1}: ${Cypress.$(element).text().trim()}`
-        );
-      });
-    });
+    loginPage.fazerLogin(dadosLogin.usuario, "SenhaInvalida123");
+    loginPage.validarPermaneceNaPaginaDeLogin();
+    loginPage.validarErroApresentado();
   });
 
   it("CT-007 - Deve impedir login sem informar o usuário", () => {
-    cy.get("#password").type(dadosLogin.senha, { log: false });
+    loginPage.preencherSenha(dadosLogin.senha);
+    loginPage.submeter();
 
-    cy.get("#username").then(($input) => {
-      cy.log(`required: ${$input.prop("required")}`);
-      cy.log(`value: "${$input.val()}"`);
-    });
-
-    cy.get(".woocommerce-form > .button").click();
-
-    cy.url().should("include", "minha-conta");
+    loginPage.validarPermaneceNaPaginaDeLogin();
+    loginPage.validarUsuarioVazio();
+    loginPage.validarMensagemDeErro("Erro: Nome de usuário é obrigatório.");
   });
 
   it("CT-008 - Deve impedir login sem informar a senha", () => {
-    cy.get("#username").type(dadosLogin.usuario);
+    loginPage.preencherUsuario(dadosLogin.usuario);
+    loginPage.submeter();
 
-    cy.get("#password").then(($input) => {
-      cy.log(`required: ${$input.prop("required")}`);
-      cy.log(`value: "${$input.val()}"`);
-    });
-
-    cy.get(".woocommerce-form > .button").click();
-
-    cy.url().should("include", "minha-conta");
+    loginPage.validarPermaneceNaPaginaDeLogin();
+    loginPage.validarSenhaVazia();
+    loginPage.validarMensagemDeErro("Erro: O campo da senha está vazio.");
   });
 });

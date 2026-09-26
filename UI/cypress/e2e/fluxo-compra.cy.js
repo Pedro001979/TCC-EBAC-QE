@@ -1,63 +1,90 @@
 /// <reference types="cypress" />
 
+import loginPage from "../support/page_objects/login.page";
 import produtosPage from "../support/page_objects/produtos.page";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 
 describe("Fluxo de pedido - EBAC Shop", () => {
   beforeEach(() => {
-    cy.visit("minha-conta");
+    loginPage.visitar();
+    cy.fixture("perfil").then(({ usuario, senha }) => {
+      loginPage.fazerLogin(usuario, senha);
+    });
+    loginPage.validarLoginRealizado();
+    produtosPage.limparCarrinho();
   });
 
   it("Fluxo completo de compra", () => {
-    cy.fixture("perfil").then((dados) => {
-      cy.login(dados.usuario, dados.senha);
-    });
-
-    cy.get(".page-title").should("exist");
-    cy.get("#primary-menu > .menu-item-629 > a").click();
-
-    produtosPage.buscarProduto("Aether Gym Pant");
-    produtosPage.addProdutoCarrinho(33, "Blue", 1);
-    cy.get(".woocommerce-message").should("exist");
-
-    produtosPage.buscarProduto("Abominable Hoodie");
-    produtosPage.addProdutoCarrinho("XL", "Green", 1);
-    cy.get(".woocommerce-message").should("exist");
-
-    produtosPage.buscarProduto("Ajax Full-Zip Sweatshirt");
-    produtosPage.addProdutoCarrinho("XS", "Blue", 1);
-    cy.get(".woocommerce-message").should("exist");
-
-    produtosPage.buscarProduto("Atlas Fitness Tank");
-    produtosPage.addProdutoCarrinho("S", "Blue", 1);
-    cy.get(".woocommerce-message").should("exist");
-
-    cy.get(".woocommerce-message > .button").click();
-    cy.get(".checkout-button").click();
-
-    const firstName = faker.person.firstName();
-    const lastName = faker.person.lastName();
-    const address1 = faker.location.streetAddress();
-    const address2 = faker.location.secondaryAddress();
-    const city = faker.location.city();
-    const state = faker.location.state();
-    const postcode = faker.location.zipCode("#####-###");
-    const phone = faker.phone.number("(##) #####-####");
+    produtosPage.navegarParaProdutos();
+    produtosPage.adicionarProduto("Aether Gym Pant", 33, "Blue", 1);
+    produtosPage.adicionarProduto("Abominable Hoodie", "XL", "Red", 1);
+    produtosPage.adicionarProduto("Ajax Full-Zip Sweatshirt", "XS", "Blue", 1);
+    produtosPage.adicionarProduto("Atlas Fitness Tank", "XL", "Blue", 1);
+    produtosPage.abrirCheckout();
 
     cy.checkout(
-      firstName,
-      lastName,
-      address1,
-      address2,
-      city,
-      state,
-      postcode,
-      phone
+      faker.person.firstName(),
+      faker.person.lastName(),
+      faker.location.streetAddress(),
+      faker.location.secondaryAddress(),
+      faker.location.city(),
+      faker.location.state(),
+      faker.location.zipCode("#####-###"),
+      faker.phone.number("(##) #####-####")
     );
 
-    cy.get(".woocommerce-notice").should(
-      "contain",
-      "Obrigado. Seu pedido foi recebido."
-    );
+    produtosPage.validarPedidoRecebido();
+  });
+
+  it("CT-009 - Deve adicionar até 10 unidades do mesmo produto", () => {
+    const quantidade = 10;
+    expect(quantidade, "quantidade solicitada no teste").to.be.within(1, 10);
+
+    produtosPage.navegarParaProdutos();
+    produtosPage.buscarProduto("Aether Gym Pant");
+    produtosPage.addProdutoCarrinho(33, "Blue", quantidade);
+    produtosPage.abrirCarrinho();
+
+    produtosPage.validarLimiteDeItens(10);
+    produtosPage.validarQuantidadeNoCarrinho(quantidade);
+  });
+
+  it("CT-010 - Não permite que o subtotal ultrapasse R$ 990,00", () => {
+    produtosPage.navegarParaProdutos();
+
+    [
+      ["Aether Gym Pant", 33, "Blue"],
+      ["Abominable Hoodie", "XL", "Red"],
+      ["Ajax Full-Zip Sweatshirt", "XS", "Blue"],
+      ["Atlas Fitness Tank", "XL", "Blue"],
+    ].forEach(([nome, tamanho, cor]) => {
+      produtosPage.buscarProduto(nome);
+      produtosPage.addProdutoCarrinho(tamanho, cor, 10);
+    });
+
+    produtosPage.abrirCarrinho();
+    produtosPage.validarSubtotalAte(990);
+  });
+
+  it("CT-011 - Concede desconto de 10% para subtotal entre R$ 200,00 e R$ 600,00", () => {
+    produtosPage.navegarParaProdutos();
+    produtosPage.adicionarProduto("Aether Gym Pant", 33, "Blue", 2);
+    produtosPage.adicionarProduto("Abominable Hoodie", "XL", "Red", 2);
+    produtosPage.adicionarProduto("Ajax Full-Zip Sweatshirt", "XS", "Blue", 2);
+    produtosPage.adicionarProduto("Atlas Fitness Tank", "XL", "Blue", 2);
+    produtosPage.abrirCarrinho();
+
+    produtosPage.validarDescontoPercentual(10, 200, 600);
+  });
+
+  it("CT-012 - Concede desconto de 15% para subtotal acima de R$ 600,00", () => {
+    produtosPage.navegarParaProdutos();
+    produtosPage.adicionarProduto("Aether Gym Pant", 33, "Blue", 3);
+    produtosPage.adicionarProduto("Abominable Hoodie", "XL", "Red", 3);
+    produtosPage.adicionarProduto("Ajax Full-Zip Sweatshirt", "XS", "Blue", 3);
+    produtosPage.adicionarProduto("Atlas Fitness Tank", "XL", "Blue", 3);
+    produtosPage.abrirCarrinho();
+
+    produtosPage.validarDescontoPercentual(15, 600, 990);
   });
 });
