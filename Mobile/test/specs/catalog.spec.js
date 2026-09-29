@@ -92,10 +92,9 @@ describe('US-0004 - Catálogo de Produtos (EBAC Store Android)', () => {
     await expect(catalogPage.sortAlphabeticalOption).toBeDisplayed();
 
     await catalogPage.chooseSortOption(catalogPage.sortPriceAscendingOption);
-    await catalogPage.waitForProducts();
+    await catalogPage.waitForDisplayedPrices();
 
     const prices = await catalogPage.displayedPrices();
-    expect(prices.length).toBeGreaterThan(1);
     expect(prices).toEqual([...prices].sort((left, right) => left - right));
   });
 });

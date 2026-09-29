@@ -96,6 +96,13 @@ class CatalogPage {
       });
   }
 
+  async waitForDisplayedPrices() {
+    await browser.waitUntil(async () => (await this.displayedPrices()).length > 1, {
+      timeout: 20000,
+      timeoutMsg: 'O catálogo não terminou de carregar preços após alterar a ordenação.',
+    });
+  }
+
   async openFirstProduct() {
     await this.waitForProducts();
 
