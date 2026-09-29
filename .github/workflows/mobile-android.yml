@@ -48,10 +48,10 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_2
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot -no-snapshot-save -no-metrics
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-metrics
           disable-animations: true
           script: |
-            set -euo pipefail
+            set -eu
 
             mkdir -p "$RUNNER_TEMP/ebac-app"
             curl --fail --location --retry 3 \
