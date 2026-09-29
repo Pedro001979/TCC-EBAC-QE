@@ -5,13 +5,30 @@ import produtosPage from "../support/page_objects/produtos.page";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 
 describe("Fluxo de pedido - EBAC Shop", () => {
-  beforeEach(() => {
+  let cupomCriado;
+
+  beforeEach(function () {
+    cupomCriado = undefined;
+
+    if (this.currentTest.title.startsWith("CT-")) {
+      cy.visit("/");
+      cy.clearCookies();
+      cy.clearLocalStorage();
+      return;
+    }
+
     loginPage.visitar();
     cy.fixture("perfil").then(({ usuario, senha }) => {
       loginPage.fazerLogin(usuario, senha);
     });
     loginPage.validarLoginRealizado();
     produtosPage.limparCarrinho();
+  });
+
+  afterEach(() => {
+    if (cupomCriado) {
+      produtosPage.removerCupom(cupomCriado.id);
+    }
   });
 
   it("Fluxo completo de compra", () => {
@@ -63,24 +80,30 @@ describe("Fluxo de pedido - EBAC Shop", () => {
   });
 
   it("CT-011 - Concede desconto de 10% para subtotal entre R$ 200,00 e R$ 600,00", () => {
-    produtosPage.navegarParaProdutos();
-    produtosPage.adicionarProduto("Aether Gym Pant", 33, "Blue", 2);
-    produtosPage.adicionarProduto("Abominable Hoodie", "XL", "Red", 2);
-    produtosPage.adicionarProduto("Ajax Full-Zip Sweatshirt", "XS", "Blue", 2);
-    produtosPage.adicionarProduto("Atlas Fitness Tank", "XL", "Blue", 2);
-    produtosPage.abrirCarrinho();
-
-    produtosPage.validarDescontoPercentual(10, 200, 600);
+    produtosPage.criarCupomPercentual(10).then((cupom) => {
+      cupomCriado = cupom;
+      produtosPage.navegarParaProdutos();
+      produtosPage.adicionarProduto("Aether Gym Pant", 33, "Blue", 2);
+      produtosPage.adicionarProduto("Abominable Hoodie", "XL", "Red", 2);
+      produtosPage.adicionarProduto("Ajax Full-Zip Sweatshirt", "XS", "Blue", 2);
+      produtosPage.adicionarProduto("Atlas Fitness Tank", "XL", "Blue", 2);
+      produtosPage.abrirCarrinho();
+      produtosPage.aplicarCupom(cupom.codigo);
+      produtosPage.validarDescontoPercentual(10, 200, 600);
+    });
   });
 
   it("CT-012 - Concede desconto de 15% para subtotal acima de R$ 600,00", () => {
-    produtosPage.navegarParaProdutos();
-    produtosPage.adicionarProduto("Aether Gym Pant", 33, "Blue", 3);
-    produtosPage.adicionarProduto("Abominable Hoodie", "XL", "Red", 3);
-    produtosPage.adicionarProduto("Ajax Full-Zip Sweatshirt", "XS", "Blue", 3);
-    produtosPage.adicionarProduto("Atlas Fitness Tank", "XL", "Blue", 3);
-    produtosPage.abrirCarrinho();
-
-    produtosPage.validarDescontoPercentual(15, 600, 990);
+    produtosPage.criarCupomPercentual(15).then((cupom) => {
+      cupomCriado = cupom;
+      produtosPage.navegarParaProdutos();
+      produtosPage.adicionarProduto("Aether Gym Pant", 33, "Blue", 3);
+      produtosPage.adicionarProduto("Abominable Hoodie", "XL", "Red", 3);
+      produtosPage.adicionarProduto("Ajax Full-Zip Sweatshirt", "XS", "Blue", 3);
+      produtosPage.adicionarProduto("Atlas Fitness Tank", "XL", "Blue", 3);
+      produtosPage.abrirCarrinho();
+      produtosPage.aplicarCupom(cupom.codigo);
+      produtosPage.validarDescontoPercentual(15, 600, 990);
+    });
   });
 });

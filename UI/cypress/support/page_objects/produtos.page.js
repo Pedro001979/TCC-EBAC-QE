@@ -1,4 +1,48 @@
 class ProdutosPage {
+  criarCupomPercentual(percentual) {
+    const usuario = Cypress.env("EBAC_API_USERNAME");
+    const senha = Cypress.env("EBAC_API_PASSWORD");
+    const codigo = `us001-e2e-${percentual}-${Date.now()}`;
+
+    expect(usuario, "Configure EBAC_API_USERNAME em .env.local").to.be.a("string").and.not.be.empty;
+    expect(senha, "Configure EBAC_API_PASSWORD em .env.local").to.be.a("string").and.not.be.empty;
+
+    return cy
+      .request({
+        method: "POST",
+        url: "/wp-json/wc/v3/coupons",
+        auth: { username: usuario, password: senha },
+        body: {
+          code: codigo,
+          discount_type: "percent",
+          amount: String(percentual),
+          description: `Cupom US001 de ${percentual}% criado pelo Cypress`,
+        },
+      })
+      .then((resposta) => {
+        expect(resposta.status, "cupom criado pela API").to.equal(201);
+        return { id: resposta.body.id, codigo };
+      });
+  }
+
+  aplicarCupom(codigo) {
+    cy.get("#coupon_code").clear().type(codigo);
+    cy.get('[name="apply_coupon"]').click();
+    cy.get(".cart-discount").should("contain.text", codigo);
+  }
+
+  removerCupom(id) {
+    const usuario = Cypress.env("EBAC_API_USERNAME");
+    const senha = Cypress.env("EBAC_API_PASSWORD");
+
+    return cy.request({
+      method: "DELETE",
+      url: `/wp-json/wc/v3/coupons/${id}`,
+      qs: { force: true },
+      auth: { username: usuario, password: senha },
+    });
+  }
+
   visitarUrl() {
     cy.visit("produtos");
   }

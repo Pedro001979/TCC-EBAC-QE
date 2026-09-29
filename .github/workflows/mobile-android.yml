@@ -1,0 +1,115 @@
+name: Mobile Android E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android-catalog:
+    name: EBAC Store catalog (Android)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Mobile/package-lock.json
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Mobile dependencies and UiAutomator2
+        run: |
+          npm ci --prefix Mobile
+          npm --prefix Mobile run appium:driver
+
+      - name: Run tests on Android emulator
+        uses: ReactiveCircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          disable-animations: true
+          script: |
+            set -euo pipefail
+
+            mkdir -p "$RUNNER_TEMP/ebac-app"
+            curl --fail --location --retry 3 \
+              "https://raw.githubusercontent.com/EBAC-QE/ebac-store-mobile-tests/5366408d5d9f03641c92de868c21ad360d32f2c8/app/ebacshop.apks.zip" \
+              --output "$RUNNER_TEMP/ebac-app/ebacshop.apks.zip"
+            unzip -q "$RUNNER_TEMP/ebac-app/ebacshop.apks.zip" -d "$RUNNER_TEMP/ebac-app"
+
+            curl --fail --location --retry 3 \
+              "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar" \
+              --output "$RUNNER_TEMP/ebac-app/bundletool.jar"
+            echo "a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29  $RUNNER_TEMP/ebac-app/bundletool.jar" | sha256sum --check
+
+            APKS_FILE="$(find "$RUNNER_TEMP/ebac-app" -name ebacshop.apks -print -quit)"
+            test -n "$APKS_FILE"
+            java -jar "$RUNNER_TEMP/ebac-app/bundletool.jar" install-apks --apks="$APKS_FILE"
+
+            adb shell settings put global window_animation_scale 0
+            adb shell settings put global transition_animation_scale 0
+            adb shell settings put global animator_duration_scale 0
+
+            cd Mobile
+            npx appium --base-path / > "$RUNNER_TEMP/appium.log" 2>&1 &
+            APPIUM_PID=$!
+            trap 'kill "$APPIUM_PID" 2>/dev/null || true' EXIT
+
+            for attempt in $(seq 1 60); do
+              if curl --silent --fail http://127.0.0.1:4723/status > /dev/null; then
+                break
+              fi
+              if ! kill -0 "$APPIUM_PID" 2>/dev/null; then
+                cat "$RUNNER_TEMP/appium.log"
+                exit 1
+              fi
+              sleep 2
+            done
+            curl --silent --show-error --fail http://127.0.0.1:4723/status
+
+            MOBILE_PREINSTALLED_APP=true npm run test:catalog
+
+      - name: Generate Allure report
+        if: always()
+        working-directory: Mobile
+        run: |
+          if [ -n "$(find allure-results -type f -print -quit 2>/dev/null)" ]; then
+            npm run report
+          else
+            echo "No Allure results were produced."
+          fi
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-android-allure-${{ github.run_number }}
+          path: |
+            Mobile/allure-results/
+            Mobile/allure-report/
+            ${{ runner.temp }}/appium.log
+          if-no-files-found: warn
+          retention-days: 14

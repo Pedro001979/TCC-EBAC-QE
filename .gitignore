@@ -71,6 +71,7 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.env.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -105,4 +106,11 @@ dist
 
 videos/
 screenshots/
+
+# Mobile test artifacts and locally downloaded reference app
+Mobile/apps/*.apk
+Mobile/allure-results/
+Mobile/allure-report/
+Mobile/.android-home/
+Mobile/Mobile/
 

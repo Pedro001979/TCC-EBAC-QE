@@ -1,10 +1,15 @@
 {
   "scripts": {
+    "test:api": "node --test API/coupons.test.js",
     "test:ui": "cypress run --config-file UI/cypress.config.js",
-    "test:ui:open": "cypress open --config-file UI/cypress.config.js"
+    "test:ui:open": "cypress open --config-file UI/cypress.config.js",
+    "test:mobile": "npm --prefix Mobile test",
+    "test:mobile:catalog": "npm --prefix Mobile run test:catalog",
+    "report:mobile": "npm --prefix Mobile run report && npm --prefix Mobile run report:open"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.9.0",
-    "cypress": "^15.0.0"
+    "@faker-js/faker": "^10.6.0",
+    "cypress": "^15.0.0",
+    "supertest": "^7.3.0"
   }
 }
