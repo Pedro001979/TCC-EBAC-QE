@@ -34,7 +34,6 @@ Esta pasta implementa a US-0004 do TCC para o app EBAC Store (br.com.lojaebac). 
 Na raiz do repositório:
 
     npm --prefix Mobile install
-    npm --prefix Mobile run appium:driver
 
 Coloque o APK correto em Mobile/apps/ebacshop.apk. O arquivo APK fica ignorado pelo Git. O teste do EBAC Store não precisa de credenciais de login.
 

@@ -8,7 +8,6 @@
     "test:catalog": "wdio run ./wdio.conf.cjs --spec ./test/specs/catalog.spec.js",
     "report": "allure generate ./allure-results --clean -o ./allure-report",
     "report:open": "allure open ./allure-report",
-    "appium:driver": "appium driver install uiautomator2",
     "appium:start": "appium --base-path /"
   },
   "engines": {

@@ -37,10 +37,9 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install Mobile dependencies and UiAutomator2
+      - name: Install Mobile dependencies
         run: |
           npm ci --prefix Mobile
-          npm --prefix Mobile run appium:driver
 
       - name: Run tests on Android emulator
         uses: ReactiveCircus/android-emulator-runner@v2.38.0
