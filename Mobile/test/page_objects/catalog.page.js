@@ -42,7 +42,13 @@ class CatalogPage {
 
   async productDescriptions() {
     const cards = await this.productCards;
-    return Promise.all(cards.map((card) => card.getAttribute('contentDescription')));
+    const descriptions = [];
+
+    for (let index = 0; index < cards.length; index += 1) {
+      descriptions.push(await cards[index].getAttribute('contentDescription'));
+    }
+
+    return descriptions;
   }
 
   async searchFor(term) {
