@@ -4,7 +4,7 @@ class CatalogPage {
   }
 
   get searchInput() {
-    return $('android=new UiSelector().text("Search Product")');
+    return $('android=new UiSelector().className("android.widget.EditText")');
   }
 
   get productCards() {
