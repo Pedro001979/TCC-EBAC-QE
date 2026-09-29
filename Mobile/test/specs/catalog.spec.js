@@ -48,7 +48,7 @@ describe('US-0004 - Catálogo de Produtos (EBAC Store Android)', () => {
 
     const [firstProduct] = await catalogPage.productDescriptions();
     const productName = firstProduct?.split(/,\s*R\$/)[0]?.trim();
-    expect(productName, 'O catálogo deve expor o nome acessível do produto').toBeTruthy();
+    expect(productName).toBeTruthy();
 
     await catalogPage.searchFor(productName);
     await catalogPage.waitForSearchResults(
