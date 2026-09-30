@@ -1,0 +1,55 @@
+name: Manual Web and API E2E
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_web:
+        description: Run Cypress Web tests against the EBAC Shop
+        type: boolean
+        required: true
+        default: false
+      run_api:
+        description: Run Supertest coupon tests against the EBAC API
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    if: ${{ inputs.run_web }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run Cypress E2E
+        run: npm run test:ui
+
+  api:
+    if: ${{ inputs.run_api }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      EBAC_API_USERNAME: ${{ secrets.EBAC_API_USERNAME }}
+      EBAC_API_PASSWORD: ${{ secrets.EBAC_API_PASSWORD }}
+      EBAC_API_BASE_URL: ${{ vars.EBAC_API_BASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check API credentials
+        run: |
+          test -n "$EBAC_API_USERNAME" || { echo "Missing repository secret EBAC_API_USERNAME"; exit 1; }
+          test -n "$EBAC_API_PASSWORD" || { echo "Missing repository secret EBAC_API_PASSWORD"; exit 1; }
+      - name: Run Supertest API suite
+        run: npm run test:api

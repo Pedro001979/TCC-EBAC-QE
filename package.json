@@ -5,6 +5,7 @@
     "test:ui:open": "cypress open --config-file UI/cypress.config.js",
     "test:mobile": "npm --prefix Mobile test",
     "test:mobile:catalog": "npm --prefix Mobile run test:catalog",
+    "test:performance": "k6 run performance/ebac-auth.js",
     "report:mobile": "npm --prefix Mobile run report && npm --prefix Mobile run report:open"
   },
   "devDependencies": {

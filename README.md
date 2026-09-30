@@ -1,89 +1,145 @@
-﻿# TCC â€” Engenharia de Qualidade de Software | EBAC Shop
+﻿# TCC — Engenharia de Qualidade de Software | EBAC Shop
 
-Projeto de conclusÃ£o do curso de **Engenharia de Qualidade de Software**, com foco na anÃ¡lise, planejamento, execuÃ§Ã£o e automaÃ§Ã£o de testes do e-commerce EBAC Shop.
+Projeto de conclusão do curso de Engenharia de Qualidade de Software, com foco na análise, planejamento, execução e automação de testes do e-commerce EBAC Shop.
 
-## Objetivo
+## Objetivo do projeto
 
-Aplicar prÃ¡ticas de Quality Engineering em diferentes nÃ­veis da aplicaÃ§Ã£o, contemplando testes manuais e automatizados, integraÃ§Ã£o contÃ­nua e testes de performance.
+Aplicar práticas de Quality Engineering em diferentes níveis da aplicação, cobrindo:
 
-## Estrutura do projeto
+- testes de interface web
+- testes de API
+- testes mobile Android
+- testes de performance com K6
+- documentação e evidências do processo de validação
 
-```
+## Visão geral da arquitetura
+
+O projeto reúne testes automatizados em 4 frentes principais:
+
+- `UI/` — automação de web com Cypress
+- `API/` — testes de API de cupons com Node.js + Supertest
+- `Mobile/` — automação Android com Appium + WebdriverIO
+- `performance/` — testes de performance do fluxo de login com k6
+
+## Estrutura do repositório
+
+```text
 .
-â”œâ”€â”€ UI/
-â”‚   â””â”€â”€ cypress/
-â”‚       â”œâ”€â”€ e2e/
-â”‚       â”œâ”€â”€ fixtures/
-â”‚       â””â”€â”€ support/
-â”‚           â””â”€â”€ page_objects/
-â”‚
-â”œâ”€â”€ API/
-â”œâ”€â”€ Mobile/
-â”œâ”€â”€ docs/
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ package.json
-â””â”€â”€ README.md
+├── API/
+│   ├── README.md
+│   ├── coupons.test.js
+│   └── load-env.js
+├── Mobile/
+│   ├── README.md
+│   ├── apps/
+│   ├── test/
+│   ├── wdio.conf.cjs
+│   └── package.json
+├── UI/
+│   ├── cypress/
+│   └── cypress.config.js
+├── performance/
+│   └── ebac-auth.js
+├── docs/
+│   └── README.md
+├── .gitignore
+├── package.json
+├── README.md
+└── LICENSE (se existir no projeto)
 ```
 
-## AutomaÃ§Ã£o Web
+## Status atual
 
-A automaÃ§Ã£o Web utiliza **Cypress + JavaScript** e mantÃ©m os recursos jÃ¡ desenvolvidos no projeto, reorganizados dentro da pasta `UI`.
+O projeto está em fase de consolidação e documentação dos resultados. As automações principais já estão organizadas por camada e a execução de performance do fluxo de login foi validada com sucesso no ambiente real.
 
-Atualmente estÃ£o estruturados:
+### Cobertura atual
 
-- **US-0002 â€” Login na plataforma**
-- Fluxo E2E de compra
-- Massa de dados com fixture
-- Comandos customizados
-- Page Object para produtos
-- **US003 â€” API de Cupons** com Supertest
-- **US-0004 â€” CatÃ¡logo de Produtos Android** com Appium + WebdriverIO, usando Page Object e relatÃ³rio Allure
+- Web: Cypress para fluxo principal do e-commerce
+- API: validação da API de cupons
+- Mobile: catalog flow no app EBAC Store
+- Performance: login em carga usando k6
 
-## PrÃ³ximas etapas
+## Como executar
 
-1. Completar a automaÃ§Ã£o Web conforme os casos de teste do TCC.
-2. Executar e revisar os casos do catálogo Android definidos na suíte Mobile.
-3. Integrar as automaÃ§Ãµes ao GitHub Actions.
-4. Implementar os testes de performance com K6.
-5. Organizar evidÃªncias finais na pasta `docs`.
-
-## ExecuÃ§Ã£o
+### 1) Instalar dependências da raiz
 
 ```bash
 npm install
-npm run test:ui
 ```
 
-Para abrir o Cypress e testar CT-011/CT-012 (eles criam cupons pela API), configure as credenciais uma vez no arquivo local ignorado pelo Git:
+### 2) Testes de API
 
-```bash
-cp .env.example .env.local
-```
-
-Edite `.env.local` com as credenciais renovadas e execute `npm run test:ui:open`. O arquivo `.env.local` nao e versionado.
-
-No Cypress, abra `fluxo-compra.cy.js` e execute CT-011 ou CT-012. Os cenÃ¡rios de carrinho CT usam uma sessÃ£o de visitante isolada, sem limpar o carrinho salvo na conta.
-
-Para executar os testes da API de cupons, configure as credenciais Basic
-conforme [API/README.md](API/README.md) e rode:
+Configure as credenciais da API conforme a documentação em [API/README.md](API/README.md) e execute:
 
 ```bash
 npm run test:api
 ```
 
-## AutomaÃ§Ã£o Mobile Android
-
-Instale as dependências conforme [Mobile/README.md](Mobile/README.md). Com um dispositivo/emulador Android e o APK local configurados:
+### 3) Testes de UI com Cypress
 
 ```bash
-npm run test:mobile:catalog
+npm run test:ui
+```
+
+Para abrir a interface do Cypress:
+
+```bash
+npm run test:ui:open
+```
+
+> A configuração local de ambiente pode exigir arquivo `.env.local` para credenciais e dados sensíveis, conforme a estrutura do projeto.
+
+### 4) Testes Mobile Android
+
+Consulte [Mobile/README.md](Mobile/README.md). O fluxo de catálogo depende de emulador Android, Appium e do APK local do EBAC Store.
+
+```bash
+npm run test:mobile
 npm run report:mobile
 ```
 
-O APK do EBAC Store é um artefato local ignorado pelo Git. A suíte de catálogo não requer credenciais.
+### 5) Testes de performance com k6
+
+O script principal está em `performance/ebac-auth.js` e pode ser executado diretamente:
+
+```bash
+k6 run performance/ebac-auth.js
+```
+
+Também existe atalho na raiz:
+
+```bash
+npm run test:performance
+```
+
+## Evidência de execução do desempenho
+
+A execução do script de performance foi validada com sucesso no ambiente real. Resultado verificado na última execução:
+
+```text
+running (2m04.9s), 297 complete and 0 interrupted iterations
+http_req_failed..................: 12.62%
+http_req_duration..............: p(95)=4.61s
+login_senha_invalida ✓
+login_valido         ✓
+```
+
+Esse resultado mostra que o script funciona, mas também evidencia que a infraestrutura alvo apresenta instabilidade real sob carga, com falhas HTTP durante o processo de autenticação.
+
+## Observações importantes
+
+- O script de performance foi ajustado para funcionar em execução direta, com fallback para usuários padrão caso `K6_TEST_USERS` não seja informado.
+- O sistema alvo não é totalmente estável em carga, o que deve ser considerado como parte do resultado do TCC.
+- O foco principal da automação não é apenas “verde no teste”, mas validar comportamento real da aplicação e documentar o que acontece em produção/ambiente de homologação.
+
+## Documentação complementar
+
+- [API/README.md](API/README.md)
+- [Mobile/README.md](Mobile/README.md)
+- [docs/README.md](docs/README.md)
 
 ## Autor
 
 **Pedro Ricardo**  
-QA Automation | Cypress | JavaScript | Web | API | Mobile
+QA Automation | Cypress | JavaScript | API | Mobile | Performance Testing
 
