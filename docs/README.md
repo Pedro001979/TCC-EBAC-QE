@@ -69,3 +69,7 @@ O projeto alcançou o objetivo principal de validar diferentes camadas da aplica
 - o script de performance foi ajustado para funcionar sem configuração manual adicional
 - o ambiente externo pode falhar em cenários de carga
 - a automação deve ser usada como evidência de comportamento real, não apenas como critério de “verde/verde” sem contexto
+
+## Documento consolidado
+
+- [Documentação final do projeto](./DOCUMENTACAO-FINAL-DO-PROJETO.md) — histórias US-0004 a US-0008, critérios Gherkin, casos de teste e descrição das frentes Web, API, Mobile, CI e K6.
